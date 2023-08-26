@@ -1,5 +1,4 @@
 import 'package:api/util/constants.dart';
-import 'package:api/view/detailTienda.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,7 +24,7 @@ class _FavoriteViewState extends State<FavoriteView> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -54,18 +53,6 @@ class _FavoriteViewState extends State<FavoriteView> {
                   final favorite = Favorite([], widget.user.user);
                   final favoriteAnimals =
                       await favorite.loadFavoriteTiendas(widget.user.user);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return DetailTiendas(
-                          user: widget.user,
-                          tienda: widget.listFavorites[index],
-                          listFavorites: favoriteAnimals,
-                        );
-                      },
-                    ),
-                  );
                 },
                 child: Container(
                   decoration: BoxDecoration(

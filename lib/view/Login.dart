@@ -1,14 +1,15 @@
 import 'package:api/bd/UserManager.dart';
-import 'package:api/model/User.dart';
-import 'package:api/model/favorite.dart';
 import 'package:api/util/AlreadyHaveAnAccountCheck.dart';
 import 'package:api/util/ButtonLogin.dart';
-import 'package:api/util/ShowDialog.dart';
 import 'package:api/util/constants.dart';
 import 'package:api/view/Register.dart';
-import 'package:api/view/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../model/User.dart';
+import '../model/favorite.dart';
+import '../util/ShowDialog.dart';
+import 'home.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -26,6 +27,7 @@ class _LoginState extends State<Login> {
   }
 
   final _formKey = GlobalKey<FormState>();
+  var valor;
   TextEditingController userController = TextEditingController();
   TextEditingController passController = TextEditingController();
 
@@ -183,8 +185,8 @@ class _LoginState extends State<Login> {
                               MaterialPageRoute(
                                 builder: (context) {
                                   return Home(
-                                      user: userLoad,
-                                      listFavorites: favoriteAnimals);
+                                    user: userLoad,
+                                  );
                                 },
                               ),
                             );

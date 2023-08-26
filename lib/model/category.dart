@@ -1,13 +1,17 @@
-class Category {
-  final String image, name;
-  Category(this.image, this.name);
+class Category2 {
+  final String image;
+  Category2(this.image);
 }
 
-List<Category> categories = [
-  Category("assets/perro.png", "Perros"),
-  Category("assets/gato.png", "Gatos"),
-  Category("assets/loro.png", "Aves"),
-  Category("assets/pez.png", "Peces"),
-  Category("assets/conejo.png", "Conejos"),
-  Category("assets/hamster.png", "Hamster"),
+List<Category2> categories = [
+  Category2("assets/profile.png"),
+  Category2(
+    "assets/profile2.png",
+  ),
+  Category2(
+    "assets/logo.png",
+  ),
+  Category2(
+    "assets/noti1.png",
+  ),
 ];

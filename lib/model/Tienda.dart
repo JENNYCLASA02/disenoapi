@@ -1,5 +1,5 @@
 class Tienda {
-  final String image, name, location, rating, description;
+  final String image, name, rating, location, description;
   final int age;
 
   Tienda(this.image, this.name, this.location, this.rating, this.age,

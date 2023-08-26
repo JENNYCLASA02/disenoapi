@@ -1,50 +1,29 @@
-import 'package:api/bd/favoriteManager.dart';
-import 'package:api/model/favorite.dart';
+import 'package:api/Providers/Products_Provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../model/Tienda.dart';
-import '../model/User.dart';
 import '../util/ButtonLogin.dart';
 import '../util/constants.dart';
 
 class DetailTiendas extends StatefulWidget {
-  final Tienda tienda;
-  final User user;
-  final List<Tienda> listFavorites;
+  final ModelosProducts products;
 
-  const DetailTiendas(
-      {Key? key,
-      required this.tienda,
-      required this.user,
-      required this.listFavorites})
-      : super(key: key);
+  const DetailTiendas({
+    Key? key,
+    required this.products,
+  }) : super(key: key);
 
   @override
   State<DetailTiendas> createState() => _DetailTiendasState();
 }
 
 class _DetailTiendasState extends State<DetailTiendas> {
-  FavoriteManager favoriteManager = FavoriteManager();
-  late Favorite favorite;
   bool isFavorite = false;
 
   @override
   void initState() {
     super.initState();
-    favorite = Favorite([], widget.user.user);
-
-    if (widget.listFavorites.isNotEmpty) {
-      for (var animal in widget.listFavorites) {
-        if (animal.name == widget.tienda.name) {
-          isFavorite = true;
-          break;
-        }
-      }
-    } else {
-      isFavorite = false;
-    }
   }
 
   @override
@@ -74,14 +53,6 @@ class _DetailTiendasState extends State<DetailTiendas> {
                 setState(() {
                   isFavorite = !isFavorite;
                 });
-
-                if (isFavorite) {
-                  await favorite.saveFavoriteTiendas(
-                      widget.tienda, widget.user.user);
-                } else {
-                  await favorite.removeFavoriteTienda(
-                      widget.tienda, widget.user.user);
-                }
               },
               icon: !isFavorite
                   ? const Icon(
@@ -107,8 +78,8 @@ class _DetailTiendasState extends State<DetailTiendas> {
                     ),
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(20),
-                        child: Image.asset(
-                          widget.tienda.image,
+                        child: Image.network(
+                          widget.products.url,
                           fit: BoxFit.fill,
                         )),
                   ),
@@ -123,24 +94,14 @@ class _DetailTiendasState extends State<DetailTiendas> {
                       height: 20.h,
                     ),
                     Text(
-                      widget.tienda.name,
+                      widget.products.title,
                       style: GoogleFonts.poppins(
                           fontSize: 20.sp, fontWeight: FontWeight.w500),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        children: [
-                          Text("Ubicacion: ${widget.tienda.location}"),
-                          Spacer(),
-                          Text("Edad: ${widget.tienda.age}")
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
                       child: Text(
-                        widget.tienda.description,
+                        widget.products.description,
                         textAlign: TextAlign.justify,
                         style: GoogleFonts.poppins(
                           fontSize: 16.sp,
@@ -155,14 +116,6 @@ class _DetailTiendasState extends State<DetailTiendas> {
                   setState(() {
                     isFavorite = !isFavorite;
                   });
-
-                  if (isFavorite) {
-                    await favorite.saveFavoriteTiendas(
-                        widget.tienda, widget.user.user);
-                  } else {
-                    await favorite.removeFavoriteTienda(
-                        widget.tienda, widget.user.user);
-                  }
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {

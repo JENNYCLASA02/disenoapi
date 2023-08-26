@@ -1,30 +1,36 @@
+import 'package:api/Models/models.dart';
 import 'package:api/model/BottomIcon.dart';
 import 'package:api/model/User.dart';
-import 'package:api/model/category.dart';
-import 'package:api/model/favorite.dart';
 import 'package:api/util/CategoryItem.dart';
 import 'package:api/util/Linepainter.dart';
 import 'package:api/util/ShowDialog.dart';
 import 'package:api/util/constants.dart';
-import 'package:api/view/CarritoView.dart';
 import 'package:api/view/Profile.dart';
 import 'package:api/view/detailTienda.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-import '../model/Tienda.dart';
+import '../Providers/Products_Provider.dart';
 import '../view/sucessStories.dart';
 
 class Home extends StatefulWidget {
   final User user;
-  final List<Tienda> listFavorites;
-  const Home({Key? key, required this.user, required this.listFavorites})
-      : super(key: key);
+  const Home({Key? key, required this.user}) : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
 }
+
+/*Future<List<ModelosProducts>> obtenerDatos() async {
+  try {
+    List<ModelosProducts> listaDeProductos = await ProductProvider().getProducts();
+    return listaDeProductos;
+  } catch (e) {
+    print('Error al obtener datos: $e');
+    throw e;
+  }
+}*/
 
 class _HomeState extends State<Home> {
   int currentPage = 0;
@@ -34,10 +40,7 @@ class _HomeState extends State<Home> {
     Widget body() {
       switch (currentPage) {
         case 0:
-          return HomePage(
-            user: widget.user,
-            listFavorites: widget.listFavorites,
-          );
+          return HomePage(user: widget.user);
 
         case 1:
           return const SuccessStories();
@@ -118,9 +121,7 @@ class _HomeState extends State<Home> {
 
 class HomePage extends StatefulWidget {
   final User user;
-  final List<Tienda> listFavorites;
-  const HomePage({Key? key, required this.user, required this.listFavorites})
-      : super(key: key);
+  const HomePage({Key? key, required this.user}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -129,8 +130,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int currentCategory = 10;
   bool favorite = false;
-  List<Tienda> listOriginalTiendas = tiendasModel;
-  List<Tienda> listFilterTiendas = [];
+  List<ModelosProducts> listaProducto = [];
+  List<String> listaCategory = [];
+
   static const List<String> listCity = <String>[
     'Todos',
     'Barranquilla',
@@ -145,8 +147,31 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    listFilterTiendas.addAll(listOriginalTiendas);
-    listFilterTiendas.shuffle();
+    cargarDatos();
+    cargarCategorias();
+  }
+
+  Future<void> cargarDatos() async {
+    try {
+      List<ModelosProducts> datos = await ProductProvider().getProducts();
+      setState(() {
+        listaProducto = datos; // Asigna la lista a la variable
+      });
+    } catch (e) {
+      // Manejo de errores
+      print('Error al cargar datos: $e');
+    }
+  }
+
+  Future<void> cargarCategorias() async {
+    try {
+      List<String> dato = await ProductProvider().getCategory();
+      setState(() {
+        listaCategory = dato;
+      });
+    } catch (e) {
+      print('Error al cargar datos: $e');
+    }
   }
 
   @override
@@ -206,13 +231,8 @@ class _HomePageState extends State<HomePage> {
                                         setState(() {
                                           if (value == listCity[0]) {
                                             listSelect = value!;
-                                            listFilterTiendas =
-                                                listOriginalTiendas;
-                                            listFilterTiendas.shuffle();
                                           } else {
                                             listSelect = value!;
-                                            filterList(listSelect);
-                                            listFilterTiendas.shuffle();
                                           }
                                         });
                                       },
@@ -234,22 +254,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () async {
-                        final favorite = Favorite([], widget.user.user);
-                        final favoriteTiendas = await favorite
-                            .loadFavoriteTiendas(widget.user.user);
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              return FavoriteView(
-                                user: widget.user,
-                                listFavorites: favoriteTiendas,
-                              );
-                            },
-                          ),
-                        );
-                      },
+                      onTap: () {},
                       child: Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
@@ -285,11 +290,7 @@ class _HomePageState extends State<HomePage> {
                           hintStyle: GoogleFonts.poppins(),
                           prefixIcon: const Icon(Icons.search),
                           prefixIconColor: kPrimary2Color),
-                      onChanged: (value) {
-                        currentCategory = 10;
-                        filterList(value);
-                        listFilterTiendas.shuffle();
-                      },
+                      onChanged: (value) {},
                     ),
                   )),
               SizedBox(
@@ -318,37 +319,24 @@ class _HomePageState extends State<HomePage> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.h),
                 child: SizedBox(
-                  height: 130,
+                  height: 90.h,
                   width: MediaQuery.of(context).size.width,
                   child: GridView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: categories.length,
+                    itemCount: listaCategory.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 1,
-                            childAspectRatio: 1.2,
+                            childAspectRatio: 0.6,
                             mainAxisSpacing: 5),
                     itemBuilder: (BuildContext context, index) {
                       return Padding(
                         padding: const EdgeInsets.fromLTRB(0, 8, 8, 8),
                         child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              if (currentCategory == index) {
-                                currentCategory = 10;
-                                listFilterTiendas = listOriginalTiendas;
-                                listFilterTiendas.shuffle();
-                              } else {
-                                currentCategory = index;
-                                filterList(categories[index].name);
-                                listFilterTiendas.shuffle();
-                              }
-                            });
-                          },
+                          onTap: () {},
                           child: CategoryItem(
-                            selected: currentCategory == index,
-                            category: categories[index],
-                          ),
+                              selected: currentCategory == index,
+                              category: listaCategory[index]),
                         ),
                       );
                     },
@@ -363,7 +351,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20.h),
-                    child: Text('Result (${listFilterTiendas.length})',
+                    child: Text('Result (${listaProducto.length})',
                         style: GoogleFonts.roboto(
                             color: Colors.black.withOpacity(0.6))),
                   ),
@@ -385,7 +373,7 @@ class _HomePageState extends State<HomePage> {
                   padding: EdgeInsets.symmetric(horizontal: 20.h),
                   child: GridView.builder(
                     scrollDirection: Axis.vertical,
-                    itemCount: listFilterTiendas.length,
+                    itemCount: listaProducto.length,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
@@ -395,18 +383,13 @@ class _HomePageState extends State<HomePage> {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: GestureDetector(
-                          onTap: () async {
-                            final favorite = Favorite([], widget.user.user);
-                            final favoriteTiendas = await favorite
-                                .loadFavoriteTiendas(widget.user.user);
+                          onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) {
                                   return DetailTiendas(
-                                    user: widget.user,
-                                    tienda: listFilterTiendas[index],
-                                    listFavorites: favoriteTiendas,
+                                    products: listaProducto[index],
                                   );
                                 },
                               ),
@@ -430,8 +413,8 @@ class _HomePageState extends State<HomePage> {
                                   child: Container(
                                     color: Colors.transparent,
                                     width: double.infinity,
-                                    child: Image.asset(
-                                      listFilterTiendas[index].image,
+                                    child: Image.network(
+                                      listaProducto[index].url,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -440,8 +423,9 @@ class _HomePageState extends State<HomePage> {
                                   flex: 1,
                                   child: Center(
                                     child: Text(
-                                      listFilterTiendas[index].name,
-                                      style: GoogleFonts.poppins(),
+                                      listaProducto[index].title,
+                                      style:
+                                          GoogleFonts.poppins(fontSize: 10.sp),
                                     ),
                                   ),
                                 )
@@ -459,17 +443,5 @@ class _HomePageState extends State<HomePage> {
         ),
       ),
     );
-  }
-
-  void filterList(String filter) {
-    setState(() {
-      listFilterTiendas = listOriginalTiendas
-          .where((Tiendas) =>
-              Tiendas.name.toLowerCase().contains(filter.toLowerCase()) ||
-              Tiendas.age.toString().contains(filter.toLowerCase()) ||
-              Tiendas.rating == filter ||
-              Tiendas.location == filter)
-          .toList();
-    });
   }
 }

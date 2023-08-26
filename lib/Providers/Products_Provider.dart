@@ -1,11 +1,29 @@
-import 'package:http/http.dart' as http;
+class ModelosProducts {
+  final int id;
+  final String title;
+  final double price;
+  final String description;
+  final String category;
+  final String url;
+  final ProductRating rating;
 
-Future<void> ModelosProducts() async {
-  final resp = await http.get(Uri.parse('https://fakestoreapi.com/products'));
+  ModelosProducts(
+    this.id,
+    this.title,
+    this.price,
+    this.description,
+    this.category,
+    this.url,
+    this.rating,
+  );
+}
 
-  if (resp.statusCode == 200) {
-    print('Respuesta exitosa: ${resp.body}');
-  } else {
-    print('Error en la solicitud ${resp.statusCode}');
-  }
+class ProductRating {
+  final double rate;
+  final int count;
+
+  ProductRating({
+    required this.rate,
+    required this.count,
+  });
 }
