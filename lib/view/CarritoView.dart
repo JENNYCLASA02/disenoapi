@@ -22,6 +22,7 @@ class _FavoriteViewState extends State<FavoriteView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,

@@ -29,10 +29,10 @@ class _DetailTiendasState extends State<DetailTiendas> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -93,10 +93,13 @@ class _DetailTiendasState extends State<DetailTiendas> {
                     SizedBox(
                       height: 20.h,
                     ),
-                    Text(
-                      widget.products.title,
-                      style: GoogleFonts.poppins(
-                          fontSize: 20.sp, fontWeight: FontWeight.w500),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(
+                        widget.products.title,
+                        style: GoogleFonts.poppins(
+                            fontSize: 20.sp, fontWeight: FontWeight.w500),
+                      ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
